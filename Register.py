@@ -3,7 +3,6 @@ import ttkbootstrap as tb
 from ttkbootstrap.validation import *
 import os
 
-
 class Register(tb.Window):
     def __init__(self) -> None:
         # configure the root window
@@ -13,7 +12,6 @@ class Register(tb.Window):
 
         # form variables
         self.email = tb.StringVar(value="")
-
         self.password = tb.StringVar(value="")
         self.confirm_password = tb.StringVar(value="")
 
@@ -42,7 +40,7 @@ class Register(tb.Window):
 
         self.email_lblframe, self.email_ent = self.create_form_entry("Your email", self.email, validation=(isEmailAddress, '%P'))
 
-        self.password_lblframe, self.password_ent = self.create_form_entry("Password", self.password, pady=(30,100))
+        self.password_lblframe, self.password_ent = self.create_form_entry("Password", self.password, pady=(30,50))
         self.confirm_password_lblframe, self.confirm_password_ent = self.create_form_entry("Confirm password", self.confirm_password, pady=(30,100))
 
         self.sign_up = self.button("Sign Up", "solid", self.signUp, pady=(25,0))
@@ -106,8 +104,15 @@ class Register(tb.Window):
         # Remove the big 'Register your account' text
         self.lg_login_label.place_forget()
 
+        def hasValue(email, password, confirm_password) -> bool:
+            if (email and password and confirm_password) != "":
+                print('It has value!')
+                return True
+            print("It doesn't have value!")
+            return False
+
         # To check whether email and password exists in the user data 
-        def isAccount(email, password):
+        def isAccount(email, password) -> bool:
             
             # Check if the file exists
             if not os.path.isfile('userdata.txt'):
@@ -118,11 +123,13 @@ class Register(tb.Window):
             # Open the file for reading
             with open('userdata.txt', 'r') as data:
                 for line in data:
+                    if not line:
+                        continue
                     #Split the line into email and password using ','
                     stored_email, stored_password = line.strip().split(',')
 
                     # Check if the email and password match
-                    if email == stored_email and password == stored_password:
+                    if email == stored_email:
                         print("It is true!")
                         return True
             print("It is false!")
@@ -133,64 +140,80 @@ class Register(tb.Window):
                 data.write(f"{email},{password}\n")
         
         # To check whether the email and password matches with the verification entries
-        def isConfirmed(email, password, confirm_password):
-            if email and password == confirm_password:
-                print("It is true! Haha")
+        def isConfirmed(password, confirm_password) -> bool:
+            if password == confirm_password:
+                print("It is confirmed!")
                 return True
-            print("It is false! Haha")
+            print("It is not confirmed!")
             return False
 
-        if (self.email.get() and self.password.get() and self.confirm_password.get()) is not "":
-            self.incorrect_label.config(text="Fill out your information")
+        # If email, password and confirm_password has any value
+        if not hasValue(self.email.get(), self.password.get(), self.confirm_password.get()):
+            self.incorrect_label.config(text="Fill out the required information")
 
+            # Change the labelframe colour to red
             self.email_lblframe.config(bootstyle='danger')
-            self.email_ent.config(bootstyle='secondary')
+            self.password_lblframe.config(bootstyle='danger')
+            self.confirm_password_lblframe.config(bootstyle='danger')
 
-        # Add error message text under the register label that says "This email address is already in use"
+            # Change the highlight to grey of the entry widgets
+            self.email_ent.config(bootstyle='secondary')
+            self.password_ent.config(bootstyle='secondary')
+            self.confirm_password_ent.config(bootstyle='secondary')
+
+            # Return null to avoid running the other functions
+            return
+
+        # If email address exists in the user data.txt
         elif isAccount(self.email.get(), self.password.get()):
+            # Add error message text under the register label that says "This email address is already in use"
             self.incorrect_label.config(text="This email address is already in use!")
             
             # Change the label frame widget color to red
             self.email_lblframe.config(bootstyle='danger')
 
-            # Change the entry widget color to gray
+            # Change the entry widget color to grey
             self.email_ent.config(bootstyle='secondary')
 
-
-            
-
+            # Return null to avoid running the other functions
             return
         
-        # Add error message text under the register label that says "Passwords do not match"
-        elif not isConfirmed(self.email.get(), self.password.get(), self.confirm_password.get()):
-            self.login_label.config(text="Register your account")
+        # If password !== confirm_password
+        elif not isConfirmed(self.password.get(), self.confirm_password.get()):
+            # Add error message text under the register label that says "Passwords do not match"
+        
             self.incorrect_label.config(text="Passwords do not match")
 
             # Remove the big 'Sign in to your account' Text
             self.lg_login_label.place_forget()
 
+            # Return null to avoid running the other functions
             return
         
-        
-        # Change the email and password label frames color to red 
-        else:
+        # If email address is wrong 
+        elif not self.isEmailAddress(self.email.get()):
             # Change the labelframes from blue to red
             self.email_lblframe.config(bootstyle='danger')
             self.password_lblframe.config(bootstyle='danger')
 
-            # Add some gray highlight on the entry widgets
+            # Add some grey highlight on the entry widgets
             self.email_ent.config(bootstyle='secondary')
             self.password_ent.config(bootstyle='secondary')
 
             # Add error message text under the register label
-            self.incorrect_label.config(text="The email address or password you entered is incorrect")
-            self.incorrect_label2.config(text="or the account does not exist")
-
-            # Append this to the txt file
-
-
+            self.incorrect_label.config(text="The email address entered is not in the correct form")
+    
             # Remove the big 'Sign in to your account' Text
             self.lg_login_label.place_forget()
+            return
+        
+        # If everything is right
+        elif not (isAccount(self.email.get(), self.password.get())) and isConfirmed( self.password.get(), self.confirm_password.get()) and hasValue(self.email.get(), self.password.get(), self.confirm_password.get()):
+            # Append this to the txt file
+            addAccount(self.email.get(), self.password.get())
+
+            self.destroy()
+
 
     def isEmailAddress(self, email) -> bool:
             """
@@ -211,25 +234,7 @@ class Register(tb.Window):
                 return True
             else:               
                 return False
-            
-            
-
-    # Forgot password button function
-    def forgotPassword(self):
-        pass
-
-    # Register account button function
-    def registerAccount(self):
-        pass    
-     
+                 
 if __name__ == "__main__":
     root = Register()
     root.mainloop()
-
-    # Update Style
-    # def dontExist(self):
-    #     self.lblframe_ref = 'danger.TLabelframe'
-    
-    
-        
-    
