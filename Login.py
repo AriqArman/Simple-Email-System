@@ -1,6 +1,7 @@
 from tkinter import *
 import ttkbootstrap as tb
 from ttkbootstrap.validation import *
+import os
 # from tkextrafont import font
 
 class Login(tb.Window):
@@ -17,16 +18,23 @@ class Login(tb.Window):
 
         # Sign in to your account text
         login_label = tb.Label(self, text = "Sign in to your account", font=("Quicksand", 18, "bold"))
-        login_label.pack(pady=(25,0))
+        login_label.pack(pady=(32,0))
 
-        # Email and password 
-        # incorrect_label = tb.Label(self, text = "The email address or password you entered is incorrect", font=("Quicksand", 10, "bold"))
-        # incorrect_label2 = tb.Label(self, text = "or the account does not exist", font=("Quicksand", 10, "bold"))
+        # Error message telling the user email/password doesn't exist
+        self.incorrect_label = tb.Label(self, text = "", font=("Quicksand", 10, "bold"))
+        self.incorrect_label2 = tb.Label(self, text = "", font=("Quicksand", 10, "bold"))
+        
+        # Pack the error messages
+        self.incorrect_label.pack(pady=(0,0))
+        self.incorrect_label2.pack(pady=(0,0))
 
-        # incorrect_label.config('hidden')
-        # incorrect_label.pack(pady=(0,0))
-        # incorrect_label2.pack(pady=(0,0))
+        # Hide the email and password error message
+        self.incorrect_label.pack()
+        self.incorrect_label2.pack()
 
+        # Big Sign in to your account text
+        self.lg_login_label = tb.Label(self, text = "Sign in to your account", font=("Quicksand", 20, "bold"))
+        self.lg_login_label.place(x=80, y=50)
 
         self.email_lblframe, self.email_ent = self.create_form_entry("Your email", self.email)
         self.password_lblframe, self.password_ent = self.create_form_entry("Password", self.password, pady=(30,100))
@@ -44,7 +52,7 @@ class Login(tb.Window):
         lblframe = tb.LabelFrame(self, text=label.title(), bootstyle=bootstyle)
         ent_misc = {
             'padx' : 60,
-            'pady' : 25,
+            'pady' : (15,25),
             'side' : 'top'
         }
         ent_misc.update(ent_misc)
@@ -90,6 +98,12 @@ class Login(tb.Window):
     
     # Sign in button function
     def signIn(self):
+        # Check if the file exists
+        if not os.path.isfile('userdata.txt'):
+            # If the file doesn't exist, create a new one
+            with open('userdata.txt', 'w') as f:
+                f.write('')
+                
         # To check whether email and password exists in the user data 
         def isAccount(email, password):
             with open('userdata.txt', 'r') as data:
@@ -110,10 +124,22 @@ class Login(tb.Window):
         
         # Change the email and password label frames color to red 
         else:
+            # Change the labelframes from blue to red
             self.email_lblframe.config(bootstyle='danger')
-            self.email_ent.config(bootstyle='secondary')
             self.password_lblframe.config(bootstyle='danger')
+
+            # Add some gray highlight on the entry widgets
+            self.email_ent.config(bootstyle='secondary')
             self.password_ent.config(bootstyle='secondary')
+
+            # Add error message text under the login label
+            self.incorrect_label.config(text="The email address or password you entered is incorrect", bootstyle='danger')
+            self.incorrect_label2.config(text="or the account does not exist", bootstyle='danger')
+
+            # Remove the big 'Sign in to your account' Text
+            self.lg_login_label.place_forget()
+
+            
 
     # Forgot password button function
     def forgotPassword(self):
