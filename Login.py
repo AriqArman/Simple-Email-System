@@ -1,7 +1,14 @@
 from tkinter import *
 import ttkbootstrap as tb
 from ttkbootstrap.validation import *
+import ttkbootstrap.style as tbs
 import os
+
+
+# Import all necessary files
+from Register import *
+from ForgotPassword import *
+
 # from tkextrafont import font
 
 class Login(tb.Window):
@@ -14,7 +21,7 @@ class Login(tb.Window):
         # form variables
         self.email = tb.StringVar(value="")
         self.password = tb.StringVar(value="")
-        self.lblframe_ref = 'info.TLabelframe'
+        self.login = False
 
         # Sign in to your account text
         login_label = tb.Label(self, text = "Sign in to your account", font=("Quicksand", 18, "bold"))
@@ -38,14 +45,14 @@ class Login(tb.Window):
 
         self.email_lblframe, self.email_ent = self.create_form_entry("Your email", self.email)
         self.password_lblframe, self.password_ent = self.create_form_entry("Password", self.password, pady=(30,100))
-        self.forgot_password = self.button("Forgot password?", 'link', self.forgotPassword, 11, padx=(287,0), pady=0, side='top')
+        self.forgot_password = self.button("Forgot password?", 'link', self.openForgotPassword, 11, padx=(287,0), pady=0, side='top')
         self.sign_in = self.button("Sign In", "solid", self.signIn, pady=(15,0))
 
         # self.signIn(self.email, self.password
 
         self.signup_label = tb.Label(self, text = "Don't have an account yet?", font=("Quicksand", 11, "bold"))
         self.signup_label.pack(side='left', padx=(110,0), pady=(0,60))
-        self.signup_button = self.button("Sign up", "link", self.registerAccount, 11, padx=(0,80), pady=(0,60), side='left')
+        self.signup_button = self.button("Sign up", "link", self.openRegisterAccountWindow, 11, padx=(0,80), pady=(0,60), side='left')
     
     def create_form_entry(self, label, variable, bootstyle='info', **ent_misc):  
         
@@ -139,46 +146,36 @@ class Login(tb.Window):
             # Remove the big 'Sign in to your account' Text
             self.lg_login_label.place_forget()
 
-            
+    # Applying themes for ForgotPassword.py
+    class StyledForgotPassword(ForgotPassword):
+        def __init__(self) -> None:
+            super().__init__()
+            # themename='darkly', resizable=(False,False)
+            self.title("Register")
+            self.geometry('600x650')
+
 
     # Forgot password button function
-    def forgotPassword(self):
-        pass
+    def openForgotPassword(self):
+        self.withdraw() # Close the current window
+        forgotPassWindow = ForgotPassword() # Run ForgotPassword.py
+        self.wait_window(forgotPassWindow)        
+        self.deiconify() # Show the sign in window again
+        self.update() # Update the window to ensure it is displayed
+
+        print("Nah")
 
     # Register account button function
-    def registerAccount(self):
-        pass    
-     
+    def openRegisterAccountWindow(self):
+        self.withdraw() # Close the current window
+        Register() # Run Register.py
+        if Register.signUp == True:
+            self.deiconify() # Show the sign in window again
+            self.update() # Update the window to ensure it is displayed
+        else:
+            print("nah")
+    
 if __name__ == "__main__":
     root = Login()
+    
     root.mainloop()
-
-    # Update Style
-    # def dontExist(self):
-    #     self.lblframe_ref = 'danger.TLabelframe'
-    
-
-
-
-    # def isEmailAddress(self, email) -> bool:
-    #         """
-    #         Validate if an email address is valid or not
-
-    #         Parameters:
-    #         email (str): Email address to validate
-
-    #         Returns:
-    #         bool: True if email is valid, False otherwise
-    #         """
-
-    #         # Regular expression pattern for email validation
-    #         pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-
-    #         # Check if email matches pattern
-    #         if re.match(pattern, email):
-    #             return True
-    #         else:               
-    #             return False
-            
-        
-    

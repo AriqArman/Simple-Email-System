@@ -1,28 +1,22 @@
 from tkinter import *
 import ttkbootstrap as tb
-from ttkbootstrap.validation import *
-import ttkbootstrap.window as tbw
-import ttkbootstrap.style as tbs
 import os
 
-class Register(tb.Toplevel):
+class ForgotPassword(tb.Toplevel):
     def __init__(self) -> None:
         # configure the root window
-        super().__init__(resizable=(False,False))
-        self.title("Register")
+        super().__init__(resizable=(False, False))
+        self.title("Password Reset")
         self.geometry('600x650')
 
         # form variables
         self.email = tb.StringVar(value="")
         self.password = tb.StringVar(value="")
         self.confirm_password = tb.StringVar(value="")
-        self.registered = False
-
-        # Register the email validation callback
-        isEmailAddress = self.register(self.isEmailAddress)
-
+        self.changed = False
+   
         # Sign in to your account text
-        self.login_label = tb.Label(self, text = "", font=("Quicksand", 18, "bold"), background='#222222')
+        self.login_label = tb.Label(self, text = "", font=("Quicksand", 18, "bold"))
         self.login_label.pack(pady=(32,0))
 
         # Error message telling the user email/password doesn't exist
@@ -38,18 +32,15 @@ class Register(tb.Toplevel):
         self.incorrect_label2.pack()
 
         # Big Sign in to your account text
-        self.lg_login_label = tb.Label(self, text = "Register your account", font=("Quicksand", 22, "bold"), background="#222222")
+        self.lg_login_label = tb.Label(self, text = "Reset your password", font=("Quicksand", 22, "bold"))
         self.lg_login_label.place(x=65, y=40, height=100)
 
-        self.email_lblframe, self.email_ent = self.create_form_entry("Your email", self.email, validation=(isEmailAddress, '%P'))
+        self.email_lblframe, self.email_ent = self.create_form_entry("Your email", self.email)
 
-        self.password_lblframe, self.password_ent = self.create_form_entry("Password", self.password, pady=(30,50))
-        self.confirm_password_lblframe, self.confirm_password_ent = self.create_form_entry("Confirm password", self.confirm_password, pady=(30,100))
+        self.password_lblframe, self.password_ent = self.create_form_entry("New Password", self.password, pady=(30,50))
+        self.confirm_password_lblframe, self.confirm_password_ent = self.create_form_entry("Confirm new password", self.confirm_password, pady=(30,100))
 
-        self.sign_up = self.button("Sign Up", "solid", self.signUp, pady=(25,0))
-
-        # apply the theme for all widgets
-
+        self.change_password = self.button("Change Password", "solid", self.changePassword, pady=(25,0))
 
     
     def create_form_entry(self, label, variable, bootstyle='info', validation=None, **ent_misc):  
@@ -102,12 +93,12 @@ class Register(tb.Toplevel):
         btn.pack(fill=X, **btn_misc)
     
     # Sign in button function
-    def signUp(self):
+    def changePassword(self):
 
-        # Add the text Register your account
-        self.login_label.config(text="Register your account")
+        # Add the text Reset your password
+        self.login_label.config(text="Reset your password")
 
-        # Remove the big 'Register your account' text
+        # Remove the big 'Reset your password' text
         self.lg_login_label.place_forget()
 
         def hasValue(email, password, confirm_password) -> bool:
@@ -136,15 +127,41 @@ class Register(tb.Toplevel):
 
                     # Check if the email and password match
                     if email == stored_email:
-                        print("It is true!")
+                        print("Email does exist!")
                         return True
-            print("It is false!")
+            print("Email doesn't exist")
             return False
         
-        def addAccount(email, password):
-            with open('userdata.txt', 'a') as data:
-                data.write(f"{email},{password}\n")
+        def editAccount(email, new_password):
+            # Check is the file exists 
+            if not os.path.isfile('userdata.txt'):
+                # If the file doesn't exist, create a new one
+                with open('userdata.txt', 'w') as f:
+                    f.write('')
+            
+            # Open the file for reading
+            with open('userdata.txt', 'r') as data:
+                lines = data.readlines()
+            
+            # Check if the email exists in the file
+            index = -1
+            for i in range(len(lines)):
+                if email in lines[i]:
+                    index = i
+                    break
+            
+            if index == 1:
+                print("Email does not exist!")
+                return
+
+            # Overwrite the old password with the new password
+            lines[index] = f'{email},{new_password}\n'
+
+            # Write the modified lines back to the file
+            with open('userdata.txt', 'w') as data:
+                data.writelines(lines)
         
+
         # To check whether the email and password matches with the verification entries
         def isConfirmed(password, confirm_password) -> bool:
             if password == confirm_password:
@@ -171,9 +188,9 @@ class Register(tb.Toplevel):
             return
 
         # If email address exists in the user data.txt
-        elif isAccount(self.email.get()):
+        elif not isAccount(self.email.get()):
             # Add error message text under the register label that says "This email address is already in use"
-            self.incorrect_label.config(text="This email address is already in use!")
+            self.incorrect_label.config(text="This email does not exist in our records!")
             
             # Change the label frame widget color to red
             self.email_lblframe.config(bootstyle='danger')
@@ -196,48 +213,11 @@ class Register(tb.Toplevel):
             # Return null to avoid running the other functions
             return
         
-        # If email address is wrong 
-        elif not self.isEmailAddress(self.email.get()):
-            # Change the labelframes from blue to red
-            self.email_lblframe.config(bootstyle='danger')
-            self.password_lblframe.config(bootstyle='danger')
-
-            # Add some grey highlight on the entry widgets
-            self.email_ent.config(bootstyle='secondary')
-            self.password_ent.config(bootstyle='secondary')
-
-            # Add error message text under the register label
-            self.incorrect_label.config(text="The email address entered is not in the correct form")
-
-            # Remove the big 'Sign in to your account' Text
-            self.lg_login_label.place_forget()
-            return
-        
         # If everything is right
-        elif not (isAccount(self.email.get())) and isConfirmed( self.password.get(), self.confirm_password.get()) and hasValue(self.email.get(), self.password.get(), self.confirm_password.get()):
+        elif (isAccount(self.email.get())) and isConfirmed(self.password.get(), self.confirm_password.get()) and hasValue(self.email.get(), self.password.get(), self.confirm_password.get()):
             # Append this to the txt file
-            addAccount(self.email.get(), self.password.get())
-
+            editAccount(self.email.get(), self.password.get())
+            self.changed = True
             self.destroy()
+
             return True
-
-
-    def isEmailAddress(self, email) -> bool:
-            """
-            Validate if an email address is valid or not
-
-            Parameters:
-            email (str): Email address to validate
-
-            Returns:
-            bool: True if email is valid, False otherwise
-            """
-
-            # Regular expression pattern for email validation
-            pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-
-            # Check if email matches pattern
-            if re.match(pattern, email):
-                return True
-            else:               
-                return False
