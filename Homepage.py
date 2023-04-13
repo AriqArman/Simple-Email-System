@@ -90,10 +90,19 @@ class Homepage(tb.Toplevel):
             13,
             pady = 45
         )
+
+        self.sent = self.button(
+            self.nav_frame,
+            'Sent',
+            'light',
+            'outline',
+            self.sentEmails,
+            13,
+            pady=45
+        )
         
         # List of all the buttons that won't have any functionality in the program (Merely design purposes)
         button_details = [
-            ("Sent", "secondary", "outline", None, 13, "disabled"), # Sent button
             ("Starred", "secondary", "outline", None, 13, "disabled"), # Starred button
             ("Drafts", "secondary", "outline", None, 13, "disabled"), # Drafts button
             ("Trash", "secondary", "outline", None, 13, "disabled") # Trash button
@@ -113,7 +122,7 @@ class Homepage(tb.Toplevel):
         self.toolTip(self.search)
 
         # List emails
-        self.createList(self.list_frame)
+        self.createList(self.list_frame, 'inbox')
 
 
         # Default text on mail_frame
@@ -152,11 +161,11 @@ class Homepage(tb.Toplevel):
         btn.pack(fill=X, **btn_misc)
         return btn
     
-    def createList(self, widget):
+    def createList(self, widget, type: str):
         # Open the email database file and read its contents
         with open("emaildatabase.txt", 'r') as f:
             contents = f.read()
-        
+
         # Split the contents of the file into a list of emails
         email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         emails = re.split(r"(?<=\n\n)(?=\S+@[^\s@]+\.[^\s@]+\b)", contents)
@@ -175,14 +184,20 @@ class Homepage(tb.Toplevel):
                     subject = components[i+1]
                     content = '\n'.join(components[i+2:])
                     break
-       
-            # If the receiver is not equal to self.email, skip this email
-            if self.email != receiver:
-                continue
 
+            # If the receiver is not equal to the logged in email, skip this email
+            if type == 'inbox':
+                text = sender
+                if self.email != receiver:
+                    continue
+
+            elif type == 'sent':
+                text = receiver
+                if self.email != sender:
+                    continue
 
             # Create a Label widget and insert the sender and the subject
-            sender_label = tb.Label(widget, text=f'{sender}', bootstyle = 'secondary-inverse', font=('Quicksand', 14, 'bold'), borderwidth=2)
+            sender_label = tb.Label(widget, text=f'{text}', bootstyle = 'secondary-inverse', font=('Quicksand', 14, 'bold'), borderwidth=2)
             sender_label.pack(fill='x')
             subject_label = tb.Label(widget, text=f'{subject}', bootstyle='secondary-inverse', font=('Quicksand', 12))
             subject_label.pack(fill='x', pady=(0,40))
@@ -228,7 +243,7 @@ class Homepage(tb.Toplevel):
         for child in self.list_frame.winfo_children():
             child.destroy()
 
-        self.createList(self.list_frame)
+        self.createList(self.list_frame, 'inbox')
 
         self.deiconify() # Show the Homepage window again
         self.update() # Update the window to ensure it is displayed
@@ -237,7 +252,6 @@ class Homepage(tb.Toplevel):
     def openInbox(self):
         # Open the inbox of the emails
         
-        self.withdraw()
         # Delete the email preview list
         children = self.list_frame.winfo_children()
 
@@ -246,19 +260,20 @@ class Homepage(tb.Toplevel):
             child.destroy()
 
         # Get new data and insert it into the list
-        self.createList(self.list_frame)
-        self.deiconify()
+        self.createList(self.list_frame, 'inbox')
         self.update()
 
     def sentEmails(self):
         # Open the emails the sender has sent. 
 
-        self.withdraw()
         # Clear the email preview list
         children = self.list_frame.winfo_children()
 
         for child in children:
             child.destroy()
+
+        self.createList(self.list_frame, 'sent')
+        self.update()
         
 
     def openEmail(self, sender, receiver, subject, content):
