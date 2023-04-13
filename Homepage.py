@@ -1,27 +1,35 @@
 from tkinter import *
 import ttkbootstrap as tb
+from ttkbootstrap.constants import *
 from ttkbootstrap.validation import *
 import ttkbootstrap.style as tbs
+import ttkbootstrap.scrolled as tbsc
+import tkinter.scrolledtext as tct
 import ttkbootstrap.tooltip as tbt
+
 import os
 
 
 # Import all necessary files
 from Login import *
-from Register import *
-from ForgotPassword import *
+from ComposeEmail import *
 
 # from tkextrafont import font
 
-class Homepage(tb.Window):
-    def __init__(self) -> None:
+class Homepage(tb.Toplevel):
+    def __init__(self, email) -> None:
         # configure the root window
-        super().__init__(themename='darkly', resizable=(False, False))
+        super().__init__(resizable=(False, False))
         self.title("Homepage")
         self.geometry('1700x1050')
-
+    
         # form variables
         self.valid_colours = ['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark']
+        self.st = None
+        self.email = email
+
+        # Initialise style 
+        style = tbs.Style()
 
         # Creating the navigation frame (the grey frame)
         self.nav_frame = tb.Frame(self) # maybe secondary?
@@ -36,8 +44,12 @@ class Homepage(tb.Window):
         self.inner_frame.grid(row=0, column=1, sticky='nsew', rowspan=2, columnspan=3)
 
         self.search_frame = tb.Frame(self.inner_frame, bootstyle='secondary')
-        self.list_frame = tb.Frame(self.inner_frame, bootstyle='danger')
-        self.mail_frame = tb.Frame(self.inner_frame, bootstyle='warning')
+        self.list_frame = tbsc.ScrolledFrame(self.inner_frame, bootstyle='dark', autohide=True)
+        
+        # self.mail_frame = tb.Frame(self.inner_frame, bootstyle='dark', borderwidth=2, relief='raised', highlightcolor=style.colors.primary)
+        self.mail_frame = Frame(self.inner_frame, highlightthickness=1, highlightbackground="#474747", bg='white')
+        
+    
 
         self.grid_columnconfigure(1, weight=11) # Makes the second column non-expandable
         self.grid_rowconfigure(1, weight=1) # Expands the frame to the bottom of the window
@@ -65,7 +77,7 @@ class Homepage(tb.Window):
             'solid',
             self.newEmail,
             15,
-            padx=45,
+            padx=25,
             pady=60
             )
         
@@ -94,12 +106,22 @@ class Homepage(tb.Window):
             
     
         # Add a search entry widget
-        self.search = tb.Entry(self.search_frame, bootstyle='secondary', takefocus=True)
+        self.search = tb.Entry(self.search_frame, bootstyle='dark', takefocus=True)
         self.search.insert(0, "Search")
         self.search.config(font=("Quicksand", 14, 'bold'), state='readonly')
-        self.search.pack(fill='x', padx= (25,1000), pady=25)
+        self.search.pack(fill='x', padx= (12,1000), pady=17)
+        self.toolTip(self.search)
 
-     
+        # List emails
+        self.createList(self.list_frame)
+
+
+        # Default text on mail_frame
+        self.default_text = tb.Label(self.mail_frame, text='Select an item to read', font=("Quicksand", 13, 'bold'), bootstyle='light')
+        self.default_text.pack(fill='y', expand=True)
+
+    
+    
     def button(self, widget, label, colour, type, command, fontsize=12, state='enabled', **pack):
         
         # Check whether colour is valid
@@ -123,24 +145,154 @@ class Homepage(tb.Window):
         btn.configure(bootstyle=f'{colour}, {type}', style=reference, state=state)
 
         btn_misc = {
-            'padx' : 60,
+            'padx' : 25,
             'pady' : 45,
             'side' : 'top'
         } | pack
         btn.pack(fill=X, **btn_misc)
         return btn
     
+    def createList(self, widget):
+        # Open the email database file and read its contents
+        with open("emaildatabase.txt", 'r') as f:
+            contents = f.read()
+        
+        # Split the contents of the file into a list of emails
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        emails = re.split(r"(?<=\n\n)(?=\S+@[^\s@]+\.[^\s@]+\b)", contents)
+
+        for email in emails:
+            # Split the email into its components
+            components = email.split('\n')
+            sender = components[0]
+            receiver = ''
+            subject = ''
+            content = ''
+
+            for i in range(1, len(components)):
+                if re.match(email_pattern, components[i]):
+                    receiver = components[i]
+                    subject = components[i+1]
+                    content = '\n'.join(components[i+2:])
+                    break
+       
+            # If the receiver is not equal to self.email, skip this email
+            if self.email != receiver:
+                continue
+
+
+            # Create a Label widget and insert the sender and the subject
+            sender_label = tb.Label(widget, text=f'{sender}', bootstyle = 'secondary-inverse', font=('Quicksand', 14, 'bold'), borderwidth=2)
+            sender_label.pack(fill='x')
+            subject_label = tb.Label(widget, text=f'{subject}', bootstyle='secondary-inverse', font=('Quicksand', 12))
+            subject_label.pack(fill='x', pady=(0,40))
+
+            # Bind the Label widgets to Mouse Click 1 to open the email
+            sender_label.bind('<Button-1>', lambda event, s=sender, r=receiver, sub=subject, con=content: self.openEmail(s, r, sub, con))
+            subject_label.bind('<Button-1>', lambda event, s=sender, r=receiver, sub=subject, con=content: self.openEmail(s, r, sub, con))
+
+
+
+    
+
+    def create_form_entry(self, label, variable, bootstyle='info', **ent_misc):  
+
+        # lblframe = tb.LabelFrame(self, text=label.title(), bootstyle=bootstyle)
+        # ent_misc = {
+        #     'padx' : 60,
+        #     'pady' : (15,25),
+        #     'side' : 'top'
+        # }
+        # ent_misc |= ent_misc
+        # lblframe.pack(fill=X, **ent_misc)
+
+        # lblframe.pack(padx=60, pady=25, fill=X)
+
+        ent = tb.Entry(textvariable=variable)
+        ent.config(font=("Quicksand", 12, "bold"))
+
+        ent.pack(fill=X)
+
+        return ent
+    
+
     def toolTip(self, widget):
-        tbt.ToolTip(widget, text="This feature is not yet available", bootstyle='secondary-inverse')
+        tbt.ToolTip(widget, text="This feature is not available", bootstyle='secondary-inverse')
 
     def newEmail(self):
         # Open a small window to compose a new email
-        pass
+        self.withdraw() # Close the current window
+        newEmailWindow = ComposeEmail(self.email) #Run ComposeEmail.py
+        self.wait_window(newEmailWindow)
+        
+        for child in self.list_frame.winfo_children():
+            child.destroy()
+
+        self.createList(self.list_frame)
+
+        self.deiconify() # Show the Homepage window again
+        self.update() # Update the window to ensure it is displayed
+        
     
     def openInbox(self):
         # Open the inbox of the emails
-        pass
+        
+        self.withdraw()
+        # Delete the email preview list
+        children = self.list_frame.winfo_children()
 
-if __name__ == "__main__":
-    root = Homepage()
-    root.mainloop()
+        # Loop through the list and destroy each child widget
+        for child in children:
+            child.destroy()
+
+        # Get new data and insert it into the list
+        self.createList(self.list_frame)
+        self.deiconify()
+        self.update()
+
+    def sentEmails(self):
+        # Open the emails the sender has sent. 
+
+        self.withdraw()
+        # Clear the email preview list
+        children = self.list_frame.winfo_children()
+
+        for child in children:
+            child.destroy()
+        
+
+    def openEmail(self, sender, receiver, subject, content):
+
+        # Initiate Styling
+        style = tb.Style()
+
+
+        # # Check if the widget is already open
+        # if self.st:
+        #     # Destroy the current widget
+        #     self.st.destroy()
+            
+        for child in self.mail_frame.winfo_children():
+            if hasattr(self, 'st'):
+                child.destroy()
+
+    
+        # Open the email from the email preview
+        self.st = tct.ScrolledText(self.mail_frame, highlightbackground=style.colors.dark, highlightthickness=2)
+        self.st.pack(fill='both', expand='yes')
+        
+        # Destroy the default text
+        self.default_text.destroy()
+
+        # Add text
+        self.st.insert(INSERT, f'From: {sender}\n\n', 'bold')
+        self.st.insert(INSERT, f'To: {receiver}\n\n','bold')
+        self.st.insert(INSERT, f'Subject: {subject}\n\n', 'bold')
+        self.st.insert(INSERT, f'{content}', 'normal')
+
+        
+        self.st.tag_config("bold", font=('Quicksand', 15, 'bold'))
+        self.st.tag_config("normal", font=('Quicksand', 15))
+
+        # Make ScrolledText read-only
+        self.st.config(state=DISABLED)
