@@ -1,5 +1,5 @@
 email@mymail.com
 violet@mymail.com
-Payment Invoice
+Welcome Message
 Welcome, Violet to our new email system! Glad to have you with us
 Regards, Email Developer Crew

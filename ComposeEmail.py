@@ -50,7 +50,7 @@ class ComposeEmail(tb.Toplevel):
         self.receiver_ent = self.createEntry(self, self.sendto, 'info', 'To', fontsize=13)
         self.subject_ent = self.createEntry(self, self.subject, 'info', 'Subject', fontsize=13)
         self.content_txt = self.createText(self, self.content, 'info', fontsize=13)
-        self.submit_btn = self.button('Submit', 'solid', self.submit, fontsize=13)
+        self.submit_btn = self.button('Send', 'solid', self.submit, fontsize=13)
 
 # def button(self, label, type, command, fontsize=12, **pack):
 

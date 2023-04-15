@@ -28,29 +28,21 @@ class Homepage(tb.Toplevel):
         self.st = None
         self.email = email
 
-        # Initialise style 
-        style = tbs.Style()
-
         # Creating the navigation frame (the grey frame)
         self.nav_frame = tb.Frame(self) # maybe secondary?
         self.grid_rowconfigure(0, weight=1) # Expands the frame to the bottom of the window
         self.grid_columnconfigure(0, weight=1) # Makes the first column expandable
 
-
         self.nav_frame.grid(row=0, column=0, sticky='nsew', rowspan=2, columnspan=1)
         
-
         self.inner_frame = tb.Frame(self, bootstyle='secondary') # Theme colour? # Currently at danger colour for debugging purposes
         self.inner_frame.grid(row=0, column=1, sticky='nsew', rowspan=2, columnspan=3)
 
         self.search_frame = tb.Frame(self.inner_frame, bootstyle='secondary')
         self.list_frame = tbsc.ScrolledFrame(self.inner_frame, bootstyle='dark', autohide=True)
         
-        # self.mail_frame = tb.Frame(self.inner_frame, bootstyle='dark', borderwidth=2, relief='raised', highlightcolor=style.colors.primary)
         self.mail_frame = Frame(self.inner_frame, highlightthickness=1, highlightbackground="#474747", bg='white')
         
-    
-
         self.grid_columnconfigure(1, weight=11) # Makes the second column non-expandable
         self.grid_rowconfigure(1, weight=1) # Expands the frame to the bottom of the window
 
@@ -60,14 +52,9 @@ class Homepage(tb.Toplevel):
         self.inner_frame.grid_columnconfigure(0, weight=1)
         self.inner_frame.grid_columnconfigure(1, weight=2)
     
-
-
         self.search_frame.grid(row=0, column=0, sticky='nsew', rowspan=2, columnspan=3)
         self.list_frame.grid(row=1, column=0, sticky='nsew', rowspan=2, columnspan=3)
         self.mail_frame.grid(row=0, column=1, sticky='nsew', rowspan=2, columnspan=3)
-
-
-
 
         # Buttons for the navigation frame
         self.compose = self.button(
@@ -113,7 +100,6 @@ class Homepage(tb.Toplevel):
             btn = self.button(self.nav_frame, label, colour, style, command, fontsize, state=state)
             self.toolTip(btn)
             
-    
         # Add a search entry widget
         self.search = tb.Entry(self.search_frame, bootstyle='dark', takefocus=True)
         self.search.insert(0, "Search")
@@ -123,7 +109,6 @@ class Homepage(tb.Toplevel):
 
         # List emails
         self.createList(self.list_frame, 'inbox')
-
 
         # Default text on mail_frame
         self.default_text = tb.Label(self.mail_frame, text='Select an item to read', font=("Quicksand", 13, 'bold'), bootstyle='light')
@@ -212,17 +197,6 @@ class Homepage(tb.Toplevel):
 
     def create_form_entry(self, label, variable, bootstyle='info', **ent_misc):  
 
-        # lblframe = tb.LabelFrame(self, text=label.title(), bootstyle=bootstyle)
-        # ent_misc = {
-        #     'padx' : 60,
-        #     'pady' : (15,25),
-        #     'side' : 'top'
-        # }
-        # ent_misc |= ent_misc
-        # lblframe.pack(fill=X, **ent_misc)
-
-        # lblframe.pack(padx=60, pady=25, fill=X)
-
         ent = tb.Entry(textvariable=variable)
         ent.config(font=("Quicksand", 12, "bold"))
 
@@ -234,11 +208,9 @@ class Homepage(tb.Toplevel):
     def toolTip(self, widget):
         tbt.ToolTip(widget, text="This feature is not available", bootstyle='secondary-inverse')
 
-    def newEmail(self):
-        # Open a small window to compose a new email
-        self.withdraw() # Close the current window
-        newEmailWindow = ComposeEmail(self.email) #Run ComposeEmail.py
-        self.wait_window(newEmailWindow)
+    def newEmail(self):  # Open a small window to compose a new email 
+        self.withdraw() # Close the current window    
+        self.wait_window(ComposeEmail(self.email)) #Wait until ComposeEmail.py is destroyed
         
         for child in self.list_frame.winfo_children():
             child.destroy()
@@ -249,9 +221,7 @@ class Homepage(tb.Toplevel):
         self.update() # Update the window to ensure it is displayed
         
     
-    def openInbox(self):
-        # Open the inbox of the emails
-        
+    def openInbox(self): # Open the inbox of the emails
         # Delete the email preview list
         children = self.list_frame.winfo_children()
 
@@ -263,9 +233,7 @@ class Homepage(tb.Toplevel):
         self.createList(self.list_frame, 'inbox')
         self.update()
 
-    def sentEmails(self):
-        # Open the emails the sender has sent. 
-
+    def sentEmails(self): # Open the emails the sender has sent. 
         # Clear the email preview list
         children = self.list_frame.winfo_children()
 
@@ -277,21 +245,13 @@ class Homepage(tb.Toplevel):
         
 
     def openEmail(self, sender, receiver, subject, content):
-
         # Initiate Styling
         style = tb.Style()
 
-
-        # # Check if the widget is already open
-        # if self.st:
-        #     # Destroy the current widget
-        #     self.st.destroy()
-            
         for child in self.mail_frame.winfo_children():
             if hasattr(self, 'st'):
                 child.destroy()
 
-    
         # Open the email from the email preview
         self.st = tct.ScrolledText(self.mail_frame, highlightbackground=style.colors.dark, highlightthickness=2)
         self.st.pack(fill='both', expand='yes')
@@ -299,12 +259,16 @@ class Homepage(tb.Toplevel):
         # Destroy the default text
         self.default_text.destroy()
 
-        # Add text
-        self.st.insert(INSERT, f'From: {sender}\n\n', 'bold')
-        self.st.insert(INSERT, f'To: {receiver}\n\n','bold')
-        self.st.insert(INSERT, f'Subject: {subject}\n\n', 'bold')
-        self.st.insert(INSERT, f'{content}', 'normal')
+        # Combine the text and the styling of the text into one dictionary
+        text_style = {
+            f'From: {sender}\n\n' : 'bold',
+            f'To: {receiver}\n\n' : 'bold',
+            f'Subject: {subject}\n\n' : 'bold',
+            f'{content}' : 'normal'
+        }
 
+        for text, style in text_style.items():
+            self.st.insert(INSERT, text, style)
         
         self.st.tag_config("bold", font=('Quicksand', 15, 'bold'))
         self.st.tag_config("normal", font=('Quicksand', 15))

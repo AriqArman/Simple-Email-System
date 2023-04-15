@@ -51,17 +51,17 @@ class ForgotPassword(tb.Toplevel):
             'pady' : (15,25),
             'side' : 'top'
         }
-        ent_misc.update(ent_misc)
+        ent_misc |= ent_misc
         lblframe.pack(fill=X, **ent_misc)
 
         # lblframe.pack(padx=60, pady=25, fill=X)
-        
+
         ent = tb.Entry(lblframe, textvariable=variable, validate='focusout', validatecommand=validation)
         ent.config(font=("Quicksand", 12, "bold"), bootstyle='secondary')
 
         ent.pack(fill=X)
 
-        if variable == self.password or variable == self.confirm_password:
+        if variable in [self.password, self.confirm_password]:
             ent.config(show="*")
 
         return lblframe, ent
@@ -70,12 +70,12 @@ class ForgotPassword(tb.Toplevel):
     def button(self, label, type, command, fontsize=12, **pack):
         # Check whether the type arg is valid
         btn_style = tb.Style()
-        if type == "solid":
-            reference = 'primary.TButton'
-        elif type == "link":
+        if type == "link":
             reference = 'primary.Link.TButton'
         elif type == "outline":
             reference = 'primary.Outline.TButton'
+        elif type == "solid":
+            reference = 'primary.TButton'
         else:
             raise TypeError("Type does not exist. Choose any from 'solid', 'outline', or 'link'")
 
@@ -84,12 +84,7 @@ class ForgotPassword(tb.Toplevel):
         btn = tb.Button(self, text=label, command=command, takefocus=False)
         btn.configure(bootstyle=f'primary, {type}', style=reference)
 
-        btn_misc = {
-            'padx' : 60,
-            'pady' : 30,
-            'side' : 'top'
-        }
-        btn_misc.update(pack)
+        btn_misc = {'padx': 60, 'pady': 30, 'side': 'top'} | pack
         btn.pack(fill=X, **btn_misc)
     
     # Sign in button function
@@ -170,19 +165,20 @@ class ForgotPassword(tb.Toplevel):
             print("It is not confirmed!")
             return False
 
-        # If email, password and confirm_password has any value
+        # If email, password and confirm_password has no value
         if not hasValue(self.email.get(), self.password.get(), self.confirm_password.get()):
             self.incorrect_label.config(text="Fill out the required information")
 
-            # Change the labelframe colour to red
-            self.email_lblframe.config(bootstyle='danger')
-            self.password_lblframe.config(bootstyle='danger')
-            self.confirm_password_lblframe.config(bootstyle='danger')
+            # Combine the Labelframe widget and Entry widget into a dictionary
+            lblframe_ent_widgets = {
+                self.email_lblframe : self.email_ent,
+                self.password_lblframe : self.password_ent,
+                self.confirm_password_lblframe : self.confirm_password_ent
+            }
 
-            # Change the highlight to grey of the entry widgets
-            self.email_ent.config(bootstyle='secondary')
-            self.password_ent.config(bootstyle='secondary')
-            self.confirm_password_ent.config(bootstyle='secondary')
+            for lblframe, ent in lblframe_ent_widgets.items():
+                lblframe.config(bootstyle='danger') # Change the labelframes from blue to red
+                ent.config(bootstyle='secondary') # Add some gray highlight on the entry widgets
 
             # Return null to avoid running the other functions
             return
