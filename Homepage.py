@@ -11,7 +11,6 @@ import os
 
 
 # Import all necessary files
-from Login import *
 from ComposeEmail import *
 
 # from tkextrafont import font
