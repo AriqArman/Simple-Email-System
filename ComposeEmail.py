@@ -110,7 +110,6 @@ class ComposeEmail(tb.Toplevel):
         # Update the content everytime it changes
         def update_contents(*args):
             self.content.set(txt.get('1.0', 'end-1c'))
-            # .config(text=self.content.get())
     
         txt = tct.ScrolledText(self, highlightbackground=self.txt_style.colors.get(colour), highlightthickness=3, font=("Quicksand", 13), height=10)
         txt.tag_config('normal', font=('Quicksand', fontsize))
@@ -131,9 +130,7 @@ class ComposeEmail(tb.Toplevel):
         }
         txt_misc |= txt_misc
         txt.pack(fill='x', **txt_misc)
-        
-
-
+    
         return txt
  
     
