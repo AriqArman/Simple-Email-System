@@ -97,15 +97,11 @@ class ForgotPassword(tb.Toplevel):
         self.lg_login_label.place_forget()
 
         def hasValue(email, password, confirm_password) -> bool:
-            if (email and password and confirm_password) != "":
-                print('It has value!')
-                return True
-            print("It doesn't have value!")
-            return False
+            return (email and password and confirm_password) != ""
 
         # To check whether email and password exists in the user data 
         def isAccount(email) -> bool:
-            
+
             # Check if the file exists
             if not os.path.isfile('userdata.txt'):
                 # If the file doesn't exist, create a new one
@@ -122,31 +118,28 @@ class ForgotPassword(tb.Toplevel):
 
                     # Check if the email and password match
                     if email == stored_email:
-                        print("Email does exist!")
                         return True
-            print("Email doesn't exist")
             return False
-        
+
         def editAccount(email, new_password):
             # Check is the file exists 
             if not os.path.isfile('userdata.txt'):
                 # If the file doesn't exist, create a new one
                 with open('userdata.txt', 'w') as f:
                     f.write('')
-            
+
             # Open the file for reading
             with open('userdata.txt', 'r') as data:
                 lines = data.readlines()
-            
+
             # Check if the email exists in the file
             index = -1
             for i in range(len(lines)):
                 if email in lines[i]:
                     index = i
                     break
-            
+
             if index == 1:
-                print("Email does not exist!")
                 return
 
             # Overwrite the old password with the new password
@@ -155,15 +148,11 @@ class ForgotPassword(tb.Toplevel):
             # Write the modified lines back to the file
             with open('userdata.txt', 'w') as data:
                 data.writelines(lines)
-        
+
 
         # To check whether the email and password matches with the verification entries
         def isConfirmed(password, confirm_password) -> bool:
-            if password == confirm_password:
-                print("It is confirmed!")
-                return True
-            print("It is not confirmed!")
-            return False
+            return password == confirm_password
 
         # If email, password and confirm_password has no value
         if not hasValue(self.email.get(), self.password.get(), self.confirm_password.get()):
@@ -187,7 +176,7 @@ class ForgotPassword(tb.Toplevel):
         elif not isAccount(self.email.get()):
             # Add error message text under the register label that says "This email address is already in use"
             self.incorrect_label.config(text="This email does not exist in our records!")
-            
+
             # Change the label frame widget color to red
             self.email_lblframe.config(bootstyle='danger')
 
@@ -196,11 +185,11 @@ class ForgotPassword(tb.Toplevel):
 
             # Return null to avoid running the other functions
             return
-        
+
         # If password !== confirm_password
         elif not isConfirmed(self.password.get(), self.confirm_password.get()):
             # Add error message text under the register label that says "Passwords do not match"
-        
+
             self.incorrect_label.config(text="Passwords do not match")
 
             # Remove the big 'Sign in to your account' Text
@@ -208,7 +197,7 @@ class ForgotPassword(tb.Toplevel):
 
             # Return null to avoid running the other functions
             return
-        
+
         # If everything is right
         elif (isAccount(self.email.get())) and isConfirmed(self.password.get(), self.confirm_password.get()) and hasValue(self.email.get(), self.password.get(), self.confirm_password.get()):
             # Append this to the txt file

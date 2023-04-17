@@ -115,9 +115,7 @@ class Login(tb.Window):
 
                     # Check if the email and password match
                     if email == stored_email and password == stored_password:
-                        print("It is true!")
                         return True
-            print("It is false!")
             return False
     
         # Check if the file exists

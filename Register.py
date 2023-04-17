@@ -106,15 +106,11 @@ class Register(tb.Toplevel):
         self.lg_login_label.place_forget()
 
         def hasValue(email, password, confirm_password) -> bool:
-            if (email and password and confirm_password) != "":
-                print('It has value!')
-                return True
-            print("It doesn't have value!")
-            return False
+            return (email and password and confirm_password) != ""
 
         # To check whether email and password exists in the user data 
         def isAccount(email) -> bool:
-            
+
             # Check if the file exists
             if not os.path.isfile('userdata.txt'):
                 # If the file doesn't exist, create a new one
@@ -131,22 +127,16 @@ class Register(tb.Toplevel):
 
                     # Check if the email and password match
                     if email == stored_email:
-                        print("It is true!")
                         return True
-            print("It is false!")
             return False
-        
+
         def addAccount(email, password):
             with open('userdata.txt', 'a') as data:
                 data.write(f"{email},{password}\n")
-        
+
         # To check whether the email and password matches with the verification entries
         def isConfirmed(password, confirm_password) -> bool:
-            if password == confirm_password:
-                print("It is confirmed!")
-                return True
-            print("It is not confirmed!")
-            return False
+            return password == confirm_password
 
         # If email, password and confirm_password has any value
         if not hasValue(self.email.get(), self.password.get(), self.confirm_password.get()):
@@ -169,7 +159,7 @@ class Register(tb.Toplevel):
         elif isAccount(self.email.get()):
             # Add error message text under the register label that says "This email address is already in use"
             self.incorrect_label.config(text="This email address is already in use!")
-            
+
             # Change the label frame widget color to red
             self.email_lblframe.config(bootstyle='danger')
 
@@ -178,11 +168,11 @@ class Register(tb.Toplevel):
 
             # Return null to avoid running the other functions
             return
-        
+
         # If password !== confirm_password
         elif not isConfirmed(self.password.get(), self.confirm_password.get()):
             # Add error message text under the register label that says "Passwords do not match"
-        
+
             self.incorrect_label.config(text="Passwords do not match")
 
             # Remove the big 'Sign in to your account' Text
@@ -190,7 +180,7 @@ class Register(tb.Toplevel):
 
             # Return null to avoid running the other functions
             return
-        
+
         # If email address is wrong 
         elif not self.isEmailAddress(self.email.get()):
             # Change the labelframes from blue to red
@@ -207,7 +197,7 @@ class Register(tb.Toplevel):
             # Remove the big 'Sign in to your account' Text
             self.lg_login_label.place_forget()
             return
-        
+
         # If everything is right
         elif not (isAccount(self.email.get())) and isConfirmed( self.password.get(), self.confirm_password.get()) and hasValue(self.email.get(), self.password.get(), self.confirm_password.get()):
             # Append this to the txt file
