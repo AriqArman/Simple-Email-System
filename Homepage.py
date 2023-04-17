@@ -7,13 +7,8 @@ import ttkbootstrap.scrolled as tbsc
 import tkinter.scrolledtext as tct
 import ttkbootstrap.tooltip as tbt
 
-import os
-
-
 # Import all necessary files
 from ComposeEmail import *
-
-# from tkextrafont import font
 
 class Homepage(tb.Toplevel):
     def __init__(self, email) -> None:
@@ -23,9 +18,9 @@ class Homepage(tb.Toplevel):
         self.geometry('1700x1050')
     
         # form variables
-        self.valid_colours = ['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark']
-        self.st = None
         self.email = email
+        self.valid_colours = ['primary', 'secondary', 'success', 'info', 'warning', 'danger', 'light', 'dark']
+        
 
         # Creating the navigation frame (the grey frame)
         self.nav_frame = tb.Frame(self) # maybe secondary?
