@@ -35,32 +35,33 @@ class ForgotPassword(tb.Toplevel):
         self.lg_login_label = tb.Label(self, text = "Reset your password", font=("Quicksand", 22, "bold"))
         self.lg_login_label.place(x=65, y=40, height=100)
 
+        # Labelframe and entry widgets creation
         self.email_lblframe, self.email_ent = self.create_form_entry("Your email", self.email)
-
         self.password_lblframe, self.password_ent = self.create_form_entry("New Password", self.password, pady=(30,50))
         self.confirm_password_lblframe, self.confirm_password_ent = self.create_form_entry("Confirm new password", self.confirm_password, pady=(30,100))
-
         self.change_password = self.button("Change Password", "solid", self.changePassword, pady=(25,0))
 
     
     def create_form_entry(self, label, variable, bootstyle='info', validation=None, **ent_misc):  
         
+        # Create a Labelframe widget
         lblframe = tb.LabelFrame(self, text=label.title(), bootstyle=bootstyle)
         ent_misc = {
             'padx' : 60,
             'pady' : (15,25),
             'side' : 'top'
         }
-        ent_misc |= ent_misc
+        ent_misc |= ent_misc # It reverts back to the default ent_misc if there is no ent_misc arguments in the function's parameters
         lblframe.pack(fill=X, **ent_misc)
 
-        # lblframe.pack(padx=60, pady=25, fill=X)
-
+        # Create the Entry widget inside the Labelframe widget
         ent = tb.Entry(lblframe, textvariable=variable, validate='focusout', validatecommand=validation)
+        # Make the color of the Entry widget grey
         ent.config(font=("Quicksand", 12, "bold"), bootstyle='secondary')
 
         ent.pack(fill=X)
-
+        
+        # Add security characters if the entry is a password entry
         if variable in [self.password, self.confirm_password]:
             ent.config(show="*")
 
@@ -79,12 +80,16 @@ class ForgotPassword(tb.Toplevel):
         else:
             raise TypeError("Type does not exist. Choose any from 'solid', 'outline', or 'link'")
 
+        # Make the font bold
         btn_style.configure(reference, font=("Quicksand", fontsize, 'bold'))
 
+        # Create the Button widget
         btn = tb.Button(self, text=label, command=command, takefocus=False)
+
+        # Apply the styling to the button
         btn.configure(bootstyle=f'primary, {type}', style=reference)
 
-        btn_misc = {'padx': 60, 'pady': 30, 'side': 'top'} | pack
+        btn_misc = {'padx': 60, 'pady': 30, 'side': 'top'} | pack # Reverts back to the default btn_misc if there is no **pack arguments in the function's parameters
         btn.pack(fill=X, **btn_misc)
     
     # Sign in button function

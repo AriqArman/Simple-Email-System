@@ -27,30 +27,31 @@ class Homepage(tb.Toplevel):
         self.grid_rowconfigure(0, weight=1) # Expands the frame to the bottom of the window
         self.grid_columnconfigure(0, weight=1) # Makes the first column expandable
 
-        self.nav_frame.grid(row=0, column=0, sticky='nsew', rowspan=2, columnspan=1)
+        self.nav_frame.grid(row=0, column=0, sticky='nsew', rowspan=2, columnspan=1) # Set navigation frame location on window
         
-        self.inner_frame = tb.Frame(self, bootstyle='secondary') # Theme colour? # Currently at danger colour for debugging purposes
-        self.inner_frame.grid(row=0, column=1, sticky='nsew', rowspan=2, columnspan=3)
+        self.inner_frame = tb.Frame(self, bootstyle='secondary') # Create inner frame widget
+        self.inner_frame.grid(row=0, column=1, sticky='nsew', rowspan=2, columnspan=3) # Set inner frame location to window
 
-        self.search_frame = tb.Frame(self.inner_frame, bootstyle='secondary')
-        self.list_frame = tbsc.ScrolledFrame(self.inner_frame, bootstyle='dark', autohide=True)
+        self.search_frame = tb.Frame(self.inner_frame, bootstyle='secondary') # Create search frame widget
+        self.list_frame = tbsc.ScrolledFrame(self.inner_frame, bootstyle='dark', autohide=True) # Create scrolled frame widget
         
-        self.mail_frame = Frame(self.inner_frame, highlightthickness=1, highlightbackground="#474747", bg='white')
+        self.mail_frame = Frame(self.inner_frame, highlightthickness=1, highlightbackground="#474747", bg='white') # Create mail frame widget
         
         self.grid_columnconfigure(1, weight=11) # Makes the second column non-expandable
         self.grid_rowconfigure(1, weight=1) # Expands the frame to the bottom of the window
 
         self.inner_frame.grid_rowconfigure(0, weight=1) # Giving the search frame 1/10 of the entire space
         self.inner_frame.grid_rowconfigure(1, weight=9) # Giving the list frame 9/10 of the entire space
-
         self.inner_frame.grid_columnconfigure(0, weight=1)
         self.inner_frame.grid_columnconfigure(1, weight=2)
-    
+
+
+        # Set search and list frames locations on window
         self.search_frame.grid(row=0, column=0, sticky='nsew', rowspan=2, columnspan=3)
         self.list_frame.grid(row=1, column=0, sticky='nsew', rowspan=2, columnspan=3)
         self.mail_frame.grid(row=0, column=1, sticky='nsew', rowspan=2, columnspan=3)
 
-        # Buttons for the navigation frame
+        # Buttons for the navigation frame  
         self.compose = self.button(
             self.nav_frame,
             "Compose", 
@@ -108,7 +109,10 @@ class Homepage(tb.Toplevel):
         self.default_text = tb.Label(self.mail_frame, text='Select an item to read', font=("Quicksand", 13, 'bold'), bootstyle='light')
         self.default_text.pack(fill='y', expand=True)
 
-    
+
+    def toolTip(self, widget):
+        # Create a tooltip when a user hovers over a widget
+        tbt.ToolTip(widget, text="This feature will be updated soon", bootstyle='secondary-inverse')
     
     def button(self, widget, label, colour, type, command, fontsize=12, state='enabled', **pack):
         
@@ -127,17 +131,25 @@ class Homepage(tb.Toplevel):
         else:
             raise TypeError("Type does not exist. Choose any from 'solid', 'outline', or 'link'")
 
+        # Configure the button style
         btn_style.configure(reference, font=("Quicksand", fontsize, 'bold'))
 
-        btn = tb.Button(widget, text=label, command=command, takefocus=False)
+        # Create the button widget
+        btn = tb.Button(widget,
+                        text=label, 
+                        command=command, 
+                        takefocus=False)
         btn.configure(bootstyle=f'{colour}, {type}', style=reference, state=state)
 
+        # Pack the button and any additional arguments
         btn_misc = {
             'padx' : 25,
             'pady' : 45,
             'side' : 'top'
         } | pack
         btn.pack(fill=X, **btn_misc)
+
+        # Return the button widget
         return btn
     
     def createList(self, widget, type: str):
@@ -145,12 +157,13 @@ class Homepage(tb.Toplevel):
         with open("emaildatabase.txt", 'r') as f:
             contents = f.read()
 
-        # Split the contents of the file into a list of emails
+        # Split the contents of the file into a list of emails using regex
         email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         emails = re.split(r"(?<=\n\n)(?=\S+@[^\s@]+\.[^\s@]+\b)", contents)
 
+        # Iterate through each email in the list. 
         for email in emails:
-            # Split the email into its components
+            # Use regex to find the receiver's email and split the email into different parts
             components = email.split('\n')
             sender = components[0]
             receiver = ''
@@ -164,12 +177,13 @@ class Homepage(tb.Toplevel):
                     content = '\n'.join(components[i+2:])
                     break
 
-            # If the receiver is not equal to the logged in email, skip this email
+            # If the receiver is not equal to the logged in email and is 'inbox', skip this email
             if type == 'inbox':
                 text = sender
                 if self.email != receiver:
                     continue
-
+            
+            # If the sender is not equal to the logged in email and is 'sent', skip this email
             elif type == 'sent':
                 text = receiver
                 if self.email != sender:
@@ -185,30 +199,29 @@ class Homepage(tb.Toplevel):
             sender_label.bind('<Button-1>', lambda event, s=sender, r=receiver, sub=subject, con=content: self.openEmail(s, r, sub, con))
             subject_label.bind('<Button-1>', lambda event, s=sender, r=receiver, sub=subject, con=content: self.openEmail(s, r, sub, con))
 
-
-
-    
-
     def create_form_entry(self, label, variable, bootstyle='info', **ent_misc):  
-
+        # Create a new Entry widget with the specified variable.
         ent = tb.Entry(textvariable=variable)
+
+        # Configure the font of the Entry widget to use the Quicksand font with size 12 and bold style.
         ent.config(font=("Quicksand", 12, "bold"))
 
+        # Pack the Entry widget into the parent container with fill=X to expand it horizontally.
         ent.pack(fill=X)
 
+        # Return the Entry widget object.
         return ent
     
 
-    def toolTip(self, widget):
-        tbt.ToolTip(widget, text="This feature is not available", bootstyle='secondary-inverse')
-
     def newEmail(self):  # Open a small window to compose a new email 
-        self.withdraw() # Close the current window    
-        self.wait_window(ComposeEmail(self.email)) #Wait until ComposeEmail.py is destroyed
+        self.withdraw() # Withdraw the current window    
+        self.wait_window(ComposeEmail(self.email)) # Wait until ComposeEmail.py is destroyed
         
+        # Destroy any children of the list_frame widget
         for child in self.list_frame.winfo_children():
             child.destroy()
 
+        # Create a new list frame for the inbox
         self.createList(self.list_frame, 'inbox')
 
         self.deiconify() # Show the Homepage window again
@@ -261,11 +274,12 @@ class Homepage(tb.Toplevel):
             f'{content}' : 'normal'
         }
 
+        # Add the text and its styling to every line
         for text, style in text_style.items():
             self.st.insert(INSERT, text, style)
         
-        self.st.tag_config("bold", font=('Quicksand', 15, 'bold'))
-        self.st.tag_config("normal", font=('Quicksand', 15))
+        self.st.tag_config("bold", font=('Quicksand', 15, 'bold')) # Set the text to 'bold'
+        self.st.tag_config("normal", font=('Quicksand', 15)) # Set the text to 'normal'
 
         # Make ScrolledText read-only
         self.st.config(state=DISABLED)
