@@ -1,6 +1,6 @@
-![Simple Email System](Simple_Email_System.png)
+# Simple Email System
 
-This is an email GUI software I have been assigned to complete at the University of Southampton Malaysia. This repository uses a recent styling Tkinter module called 'ttkbootstrap'
+A Simple Email GUI System using Python's Tkinter Module.
 
 ## Installation
 Use the package manager [pip](https://pip.pypa.io/en/stable/) to install ttkbootstrap.
