@@ -1,4 +1,5 @@
-!(Simple_Email_System.png)
+![Simple Email System](Simple_Email_System.png)
+
 This is an email GUI software I have been assigned to complete at the University of Southampton Malaysia. This repository uses a recent styling Tkinter module called 'ttkbootstrap'
 
 ## Installation
