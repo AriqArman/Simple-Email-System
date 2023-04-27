@@ -21,7 +21,7 @@ Here's an example of how to use the Email System:
 1. (Optional) Download the [Quicksand](https://fonts.google.com/specimen/Quicksand) font 
 2. Launch the program by following the steps above
 3. Enter your email address and password when prompted
-4. Select the "COMpose Email" option from the menu
+4. Select the "Compose Email" option from the menu
 5. Enter the recipient's email address, a subject line, and the body of the email.
 6. Click "Send" to send the email.
 
