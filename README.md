@@ -47,17 +47,22 @@ Here's an example of how to use the Email System:
 3. Some of the content in the email are missing
       - If an email content contains a newline (`\n`) statement followed by an email address, the email address and the content following that would not be displayed in the program 
         - This is due to a Regex expression where the emails are split once it meets a new line statement (`\n`) adjacent to an email address. 
+        
       - If you found out the hard way, open the `emaildatabase.txt` file and remove the entire email which is positioned at the top of the text file.
+      
       - To put it simply: avoid adding an email address in the content section when composing a new email
 
 4. Starred, Drafts, Trash and Search don't work. Why?
       - Those features are not implemented in this program as it is desgined to be a purely _Simple_ Email System. 
+      
         - The reason of adding these buttons and search bar is purely for **design purposes** as without them, the program would look empty and pale.
+        
       - If you hover over the buttons, a tooltip appears saying "This feature will be updated soon"
 
 5. Why are the placements of the widgets completely wrong?
       - The placement of the widgets are caused by the differences of monitor screen sizes as well as the resolution. 
         - If you are running this program on a 1920x1080 screen, it is most likely that the widgets and their placements are not user friendly at all. 
+        
       - To see the true design of this program, watch the [Demonstration Video](https://drive.google.com/file/d/1JSLp86hZY9spXKnWaTiS9D-OKBjLAi6p/view?usp=sharing) file.
  
 6. Do I need to download the [Quicksand](https://fonts.google.com/specimen/Quicksand) font?
