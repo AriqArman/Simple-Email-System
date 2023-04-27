@@ -72,5 +72,5 @@ Here's an example of how to use the Email System:
     - As things currently stand, improving the program by adding additional functionalities would make the user experience better. However, I plan on to moving to different projects specifically web development as it prevents placement issues as mentioned as well as custom font issues.
 
 ## Acknowledgement
-    - [ttkbootstrap](https://github.com/israel-dryer/ttkbootstrap/) framework developed by [israel-dryer](https://github.com/israel-dryer)
+   [ttkbootstrap](https://github.com/israel-dryer/ttkbootstrap/) framework developed by [israel-dryer](https://github.com/israel-dryer)
 
