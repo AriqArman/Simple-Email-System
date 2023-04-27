@@ -46,7 +46,7 @@ Here's an example of how to use the Email System:
 
 3. Some of the content in the email are missing
       - If an email content contains a newline (`\n`) statement followed by an email address, the email address and the content following that would not be displayed in the program 
-      - This is due to a Regex expression where the emails are split once it meets a new line statement (`\n`) adjacent to an email address. 
+        - This is due to a Regex expression where the emails are split once it meets a new line statement (`\n`) adjacent to an email address. 
       - If you found out the hard way, open the `emaildatabase.txt` file and remove the entire email which is positioned at the top of the text file.
       - To put it simply: avoid adding an email address in the content section when composing a new email
 
