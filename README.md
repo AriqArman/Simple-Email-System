@@ -27,7 +27,7 @@ Here's an example of how to use the Email System:
 
 ## Frequently Asked Questions (FAQ)
 1. I've altered or modified the userdata.txt and now the program doesn't work
-  - The `userdata.txt` file follows the format:
+    - The `userdata.txt` file follows the format:
     `(user's email address),(user password)\n`
   - The new line (`\n`) at the bottom is **necessary** and should **not** be removed from the text file
 
