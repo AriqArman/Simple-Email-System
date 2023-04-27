@@ -51,7 +51,7 @@ Here's an example of how to use the Email System:
    - To put it simply: avoid adding an email address in the content section when composing a new email
 
 4. Starred, Drafts, Trash and Search don't work. Why?
-  - -Those features are not implemented in this program as it is desgined to be a purely _Simple_ Email System. 
+  - Those features are not implemented in this program as it is desgined to be a purely _Simple_ Email System. 
   - The reason of adding these buttons and search bar is purely for **design purposes** as without them, the program would look empty and pale.
   - If you hover over the buttons, a tooltip appears saying "This feature will be updated soon"
 
