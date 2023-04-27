@@ -58,7 +58,7 @@ Here's an example of how to use the Email System:
 5. Why are the placements of the widgets completely wrong?
   - The placement of the widgets are caused by the differences of monitor screen sizes as well as the resolution. 
   - If you are running this program on a 1920x1080 screen, it is most likely that the widgets and their placements are not user friendly at all. 
-  - To see the true design of this program, watch the Demonstration Video file attached in this repository.
+  - To see the true design of this program, watch the [Demonstration Video](https://drive.google.com/file/d/1JSLp86hZY9spXKnWaTiS9D-OKBjLAi6p/view?usp=sharing) file.
  
 6. Do I need to download the [Quicksand](https://fonts.google.com/specimen/Quicksand) font?
   - No you absolutely do not have to. But I highly recommend that you download it for a better user experience.
