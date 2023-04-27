@@ -13,7 +13,7 @@ To run the Email System Application, follow these steps:
 1. Make sure you have Python 3 installed on your computer 
 2. Clone the repository: `git clone https://github.com/AriqArman/Simple-Email-System.git`
 3. Navigate to the project directory
-4. Open the `EmailApppy` file in your Python IDE of choice
+4. Open the `Email.App.py` file in your Python IDE of choice
 5. Run the program by clicking the "Run" button or using the keyboard shortcut for your IDE
 
 ## Examples
